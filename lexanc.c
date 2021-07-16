@@ -72,19 +72,19 @@ void skipblanks ()
 TOKEN identifier (TOKEN tok)
   {
         char c;
-        char* str;
+        char str[16] = {0};
         int cnt = 0;
         while ((c = peekchar()) != EOF && (CHARCLASS[c] == NUMERIC || CHARCLASS[c] == ALPHA)) {
             c = getchar();
             if (cnt < 15)
-                strncat(str, c, 1);
+                strncat(str, &c, 1);
             cnt++;
         }
         int i;
         for (i = 0; i < 29; i++) {
             if (strcmp(_reserved[i], str) == 0) {
                 tok->tokentype = RESERVED;
-                tok->whichval = i;
+                tok->whichval = i+1;
             }
             if (i >= 13 && i < 19) {
                 if (strcmp(_operator[i], str) == 0) {
@@ -102,7 +102,7 @@ TOKEN identifier (TOKEN tok)
 TOKEN getstring (TOKEN tok)
   {
         char c;
-        char* str;
+        char str[16] = {0};
         int cnt = 0;
         char END_OF_STRING = 0;
         c = getchar();
@@ -115,14 +115,14 @@ TOKEN getstring (TOKEN tok)
                 }
                 else {
                     if (cnt < 15) 
-                        strncat(str, c, 1);
+                        strncat(str, &c, 1);
                     cnt++;
                     c = getchar();
                 }
             }
             else {
                 if (cnt < 15) 
-                    strncat(str, c, 1);
+                    strncat(str, &c, 1);
                 cnt++;
             }        
         }
@@ -191,13 +191,13 @@ TOKEN special (TOKEN tok)
             int i;
             for (i = 0; i < 26; i++) {
                 if (i < 7) {
-                    if (c == _delimiter[i]) {
+                    if (c == _delimiter[i][0]) {
                         tok->tokentype = DELIMITER;
                         tok->whichval = i+1;
                     }
                 }
                 if (i < 13) {
-                    if (c == _operator[i]) {
+                    if (c == _operator[i][0]) {
                         tok->tokentype = OPERATOR;
                         tok->whichval = i+1;
                     }
@@ -242,7 +242,7 @@ TOKEN number (TOKEN tok)
                     numsigd++;
                 charval = (c - '0');
                 if (num > INTMAX/10 || (num == INTMAX/10 && charval > 7)) {
-                    printf("error: number too large. tokentype: %f datatype: %f", NUMBERTOK, (dec > -1) ? REAL : INTEGER);
+                    printf("error: number too large. tokentype: %d datatype: %d", NUMBERTOK, (dec > -1) ? REAL : INTEGER);
                 }
                 num = num * 10 + charval;
             }
@@ -250,7 +250,7 @@ TOKEN number (TOKEN tok)
         else if (EXP_FLAG == 1) {
             charval = (c - '0');
             if (exp > EXPMAX/10 || (exp == EXPMAX/10 && charval > 8)) {
-                printf("error: exponent too large. tokentype: %f datatype: %f", NUMBERTOK, (dec > -1) ? REAL : INTEGER);
+                printf("error: exponent too large. tokentype: %d datatype: %d", NUMBERTOK, (dec > -1) ? REAL : INTEGER);
             }
             exp = exp * 10 + charval;
         }
