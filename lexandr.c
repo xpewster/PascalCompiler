@@ -48,6 +48,7 @@ int main()
    {   
        initscanner();
        init_charclass();                    /* init the scanner */
+       init_exptable();
        printf("Started scanner test.\n");
        testscanner();
    }

@@ -27,10 +27,29 @@
 
 #define DEBUGGETTOKEN 0
 
+#define MAXEXPTABLE 39
+
+#define INTMAX 2147483647
+#define EXPMAX 38
+
+static char* _operator[]  = {"+", "-", "*", "/", ":=", "=", "<>", "<", "<=",
+                          ">=", ">",  "^", ".", "and", "or", "not", "div",
+                          "mod", "in", "goto", "progn", "label",
+                          "funcall", "aref", "program", "float"};
+static char *_delimiter[] = {",", ";", ":", "(", ")", "[", "]",
+                           ".."} ;
+static char *_reserved[] = { "array", "begin", "case", "const", "do",
+                           "downto", "else", "end", "file", "for",
+		           "function", "goto", "if", "label", "nil",
+                           "of", "packed", "procedure", "program", "record",
+                           "repeat", "set", "then", "to", "type",
+		           "until", "var", "while", "with" };
+
 TOKEN talloc();
 int peekchar();
 int peek2char();
 void init_charclass();
+void init_exptable();
 TOKEN gettoken();
 void printtoken(TOKEN tok);
 
@@ -45,3 +64,6 @@ TOKEN number (TOKEN tok);
 
 int yylex();
 void yyerror (char const *s);
+
+double EXPTABLE[MAXEXPTABLE];
+

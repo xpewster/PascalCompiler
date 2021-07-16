@@ -66,6 +66,13 @@ void init_charclass()   /* initialize character class array */
     for (i = 0 ; specchar[i] != '\0';  ++i) CHARCLASS[specchar[i]] = SPECIAL;
     }
 
+void init_exptable()   /* initialize character class array */
+  { 
+    EXPTABLE[0] = 1.0;
+    int i = 0;
+    for (i = 1; i < MAXEXPTABLE; ++i) EXPTABLE[i] = 10.0*EXPTABLE[i-1];
+    }
+
 /* Get the next token from the input.
    This is the interface from the parser to the lexical analyzer. */
 TOKEN gettoken()
@@ -73,17 +80,18 @@ TOKEN gettoken()
       TOKEN tok = (TOKEN) talloc();   /* = new token */
       skipblanks();     /* and comments */
       if ((c = peekchar()) != EOF)
-          {
-            cclass = CHARCLASS[c];
-            if (cclass == ALPHA)
-              identifier(tok);
-            else if (cclass == NUMERIC)
-                    number(tok);
-                    else if (c == '\'')
-                            getstring(tok);
-                            else special(tok);
-          }
-          else EOFFLG = 1;
+      {
+        cclass = CHARCLASS[c];
+        if (cclass == ALPHA)
+            identifier(tok);
+        else if (cclass == NUMERIC)
+            number(tok);
+        else if (c == '\'')
+            getstring(tok);
+        else 
+            special(tok);
+      }
+      else EOFFLG = 1;
      if (DEBUGGETTOKEN != 0) printtoken(tok);
      return(tok);
   }
