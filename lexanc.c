@@ -39,10 +39,33 @@ const int MAX_SIGNIFICANT_DIGITS = 8;
 /* Skip blanks and whitespace.  Expand this function to skip comments too. */
 void skipblanks ()
   {
-      int c;
-      while ((c = peekchar()) != EOF
-             && (c == ' ' || c == '\n' || c == '\t'))
-          getchar();
+        int c;
+        char IN_COMMENT_1_FLAG = 0;
+        char IN_COMMENT_2_FLAG = 0;
+        while ((c = peekchar()) != EOF
+                && (c == ' ' || c == '\n' || c == '\t' || c == '{' || c == '}' || c == '(' || c == ')' || c == '*' || IN_COMMENT_1_FLAG == 1 || IN_COMMENT_2_FLAG == 1)) {
+            c = getchar();
+            if (c == '{') {
+                IN_COMMENT_1_FLAG = 1;
+            }
+            else if (c == '}') {
+                IN_COMMENT_1_FLAG = 0;
+            }
+            else if (c == '(') {
+                int c2;
+                if ((c2 = peekchar()) == '*') {
+                    IN_COMMENT_2_FLAG = 1;
+                    getchar();
+                }
+            }
+            else if (c == '*') {
+                int c2;
+                if ((c2 = peekchar()) == ')') {
+                    IN_COMMENT_2_FLAG = 0;
+                    getchar();
+                }
+            }
+        }
     }
 
 /* Get identifiers and reserved words */
