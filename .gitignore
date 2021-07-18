@@ -1,3 +1,6 @@
 *.pas
 *.o
 lexanc
+*.out
+*.sample
+compilation_dump

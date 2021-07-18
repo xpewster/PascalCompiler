@@ -30,7 +30,9 @@
 #define MAXEXPTABLE 39
 
 #define INTMAX 2147483647
+#define LONGMAX 9223372036854775807
 #define EXPMAX 38
+#define MAX_SIGNIFICANT_DIGITS 8
 
 static char* _operator[]  = {"+", "-", "*", "/", ":=", "=", "<>", "<", "<=",
                           ">=", ">",  "^", ".", "and", "or", "not", "div",
