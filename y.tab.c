@@ -66,7 +66,7 @@
 
 
 /* First part of user prologue.  */
-#line 1 "pars1.y"
+#line 1 "parse.y"
      /* pars1.y    Pascal Parser      Gordon S. Novak Jr.  ; 25 Jul 19   */
 
 /* Copyright (c) 2019 Gordon S. Novak Jr. and
@@ -130,7 +130,7 @@
 TOKEN parseresult;
 
 
-#line 134 "pars1.tab.c"
+#line 134 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -164,7 +164,7 @@ TOKEN parseresult;
 
 /* Debug traces.  */
 #ifndef YYDEBUG
-# define YYDEBUG 1
+# define YYDEBUG 0
 #endif
 #if YYDEBUG
 extern int yydebug;
@@ -1525,145 +1525,145 @@ yyreduce:
   switch (yyn)
     {
   case 2:
-#line 84 "pars1.y"
+#line 84 "parse.y"
                                         { parseresult = makeprogram(yyvsp[-6], yyvsp[-4], yyvsp[-1]); }
-#line 1531 "pars1.tab.c"
+#line 1531 "y.tab.c"
     break;
 
   case 3:
-#line 86 "pars1.y"
+#line 86 "parse.y"
                                         { yyval = cons(yyvsp[-2], yyvsp[0]); }
-#line 1537 "pars1.tab.c"
+#line 1537 "y.tab.c"
     break;
 
   case 4:
-#line 87 "pars1.y"
+#line 87 "parse.y"
                            { yyval = cons(yyvsp[0], NULL); }
-#line 1543 "pars1.tab.c"
+#line 1543 "y.tab.c"
     break;
 
   case 5:
-#line 89 "pars1.y"
+#line 89 "parse.y"
                                    { yyval = yyvsp[0]; }
-#line 1549 "pars1.tab.c"
+#line 1549 "y.tab.c"
     break;
 
   case 9:
-#line 95 "pars1.y"
+#line 95 "parse.y"
                                   { instvars(yyvsp[-2], yyvsp[0]); }
-#line 1555 "pars1.tab.c"
+#line 1555 "y.tab.c"
     break;
 
   case 11:
-#line 98 "pars1.y"
+#line 98 "parse.y"
                           { yyval = findtype(yyvsp[0]); }
-#line 1561 "pars1.tab.c"
+#line 1561 "y.tab.c"
     break;
 
   case 12:
-#line 100 "pars1.y"
+#line 100 "parse.y"
                                             { yyval = makeprogn(yyvsp[-2],cons(yyvsp[-1], yyvsp[0])); }
-#line 1567 "pars1.tab.c"
+#line 1567 "y.tab.c"
     break;
 
   case 13:
-#line 102 "pars1.y"
+#line 102 "parse.y"
                                        { yyval = makeprogn(yyvsp[-2],cons(yyvsp[-1], yyvsp[0])); }
-#line 1573 "pars1.tab.c"
+#line 1573 "y.tab.c"
     break;
 
   case 14:
-#line 103 "pars1.y"
+#line 103 "parse.y"
                                                { yyval = makeif(yyvsp[-4], yyvsp[-3], yyvsp[-1], yyvsp[0]); }
-#line 1579 "pars1.tab.c"
+#line 1579 "y.tab.c"
     break;
 
   case 15:
-#line 104 "pars1.y"
+#line 104 "parse.y"
                                                      { yyval = makefor(1, yyvsp[-5], yyvsp[-4], yyvsp[-3], yyvsp[-2], yyvsp[-1], yyvsp[0]); }
-#line 1585 "pars1.tab.c"
+#line 1585 "y.tab.c"
     break;
 
   case 16:
-#line 105 "pars1.y"
+#line 105 "parse.y"
                                                          { yyval = makefor(-1, yyvsp[-5], yyvsp[-4], yyvsp[-3], yyvsp[-2], yyvsp[-1], yyvsp[0]); }
-#line 1591 "pars1.tab.c"
+#line 1591 "y.tab.c"
     break;
 
   case 19:
-#line 109 "pars1.y"
+#line 109 "parse.y"
                                                { yyval = cons(yyvsp[-1], yyvsp[0]); }
-#line 1597 "pars1.tab.c"
+#line 1597 "y.tab.c"
     break;
 
   case 20:
-#line 110 "pars1.y"
+#line 110 "parse.y"
                                                { yyval = NULL; }
-#line 1603 "pars1.tab.c"
+#line 1603 "y.tab.c"
     break;
 
   case 21:
-#line 112 "pars1.y"
+#line 112 "parse.y"
                                                { yyval = yyvsp[0]; }
-#line 1609 "pars1.tab.c"
+#line 1609 "y.tab.c"
     break;
 
   case 22:
-#line 113 "pars1.y"
+#line 113 "parse.y"
                                                { yyval = NULL; }
-#line 1615 "pars1.tab.c"
+#line 1615 "y.tab.c"
     break;
 
   case 23:
-#line 115 "pars1.y"
+#line 115 "parse.y"
                                                  {yyval = makefuncall(yyvsp[-2], yyvsp[-3], yyvsp[-1]); }
-#line 1621 "pars1.tab.c"
+#line 1621 "y.tab.c"
     break;
 
   case 24:
-#line 117 "pars1.y"
+#line 117 "parse.y"
                                                { yyval = cons(yyvsp[-2], yyvsp[0]); }
-#line 1627 "pars1.tab.c"
+#line 1627 "y.tab.c"
     break;
 
   case 25:
-#line 118 "pars1.y"
+#line 118 "parse.y"
                      { yyval = cons(yyvsp[0], NULL); }
-#line 1633 "pars1.tab.c"
+#line 1633 "y.tab.c"
     break;
 
   case 26:
-#line 120 "pars1.y"
+#line 120 "parse.y"
                                                { yyval = binop(yyvsp[-1], yyvsp[-2], yyvsp[0]); }
-#line 1639 "pars1.tab.c"
+#line 1639 "y.tab.c"
     break;
 
   case 27:
-#line 122 "pars1.y"
+#line 122 "parse.y"
                                                { yyval = binop(yyvsp[-1], yyvsp[-2], yyvsp[0]); }
-#line 1645 "pars1.tab.c"
+#line 1645 "y.tab.c"
     break;
 
   case 29:
-#line 125 "pars1.y"
+#line 125 "parse.y"
                                                { yyval = binop(yyvsp[-1], yyvsp[-2], yyvsp[0]); }
-#line 1651 "pars1.tab.c"
+#line 1651 "y.tab.c"
     break;
 
   case 31:
-#line 128 "pars1.y"
+#line 128 "parse.y"
                                                { yyval = yyvsp[-1]; }
-#line 1657 "pars1.tab.c"
+#line 1657 "y.tab.c"
     break;
 
   case 35:
-#line 133 "pars1.y"
+#line 133 "parse.y"
                                                { yyval = findid(yyvsp[0]); }
-#line 1663 "pars1.tab.c"
+#line 1663 "y.tab.c"
     break;
 
 
-#line 1667 "pars1.tab.c"
+#line 1667 "y.tab.c"
 
       default: break;
     }
@@ -1895,7 +1895,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 134 "pars1.y"
+#line 134 "parse.y"
 
 
 /* You should add your own debugging flags below, and add debugging
@@ -1905,7 +1905,7 @@ yyreturn:
    are working.
   */
 
-#define DEBUG        16             /* set bits here for debugging, 0 = off  */
+#define DEBUG        0             /* set bits here for debugging, 0 = off  */
 #define DB_CONS       1             /* bit to trace cons */
 #define DB_BINOP      2             /* bit to trace binop */
 #define DB_MAKEIF     4             /* bit to trace makeif */
@@ -1993,6 +1993,7 @@ TOKEN makeop(int opnum) {
 TOKEN makeintc(int num) {
     TOKEN t = talloc();
     t->tokentype = NUMBERTOK;
+    t->basicdt = INTEGER;
     t->intval = num;
     return t;
 }
@@ -2156,6 +2157,7 @@ TOKEN findid(TOKEN tok) { /* the ID token */
     if ( typ->kind == BASICTYPE ||
         typ->kind == POINTERSYM)
     tok->basicdt = typ->basicdt;
+    return tok;
 }
 
 
@@ -2163,6 +2165,7 @@ TOKEN findtype(TOKEN tok) { /* the type token */
     SYMBOL sym, typ;
     sym = searchins(tok->stringval);
     tok->symtype = sym;
+    return tok;
 }
 
 int main(void)          /*  */

@@ -81,7 +81,7 @@ TOKEN parseresult;
 %%
 
 program    :  PROGRAM IDENTIFIER LPAREN idlist RPAREN SEMICOLON vblock DOT /* change this! */       
-                                        { parseresult = makeprogram($1, $2, $7); }
+                                        { parseresult = makeprogram($2, $4, $7); }
              ;
 idlist       :  IDENTIFIER COMMA idlist { $$ = cons($1, $3); }
              |  IDENTIFIER { $$ = cons($1, NULL); }
@@ -196,9 +196,12 @@ TOKEN makeif(TOKEN tok, TOKEN exp, TOKEN thenpart, TOKEN elsepart)
 
 /* makeprogram makes the tree structures for the top-level program */
 TOKEN makeprogram(TOKEN name, TOKEN args, TOKEN statements) {
-    args->link = statements;
-    name->operands = args;
-    return name;
+    TOKEN p = makeprogn(makeop(PROGNOP), args);
+    p->link = statements;
+    name->link = p;
+    TOKEN prog = makeop(PROGRAMOP);
+    prog->operands = name;
+    return prog;
 }
 
 TOKEN makeprogn(TOKEN tok, TOKEN statements)
@@ -225,6 +228,7 @@ TOKEN makeop(int opnum) {
 TOKEN makeintc(int num) {
     TOKEN t = talloc();
     t->tokentype = NUMBERTOK;
+    t->basicdt = INTEGER;
     t->intval = num;
     return t;
 }
@@ -252,6 +256,30 @@ TOKEN makeplus(TOKEN lhs, TOKEN rhs, TOKEN tok) {
     }
     tok->operands = lhs;
     tok->operands->link = rhs;
+    return tok;
+}
+
+/*typedef struct tokn {
+  int    tokentype;  
+  int    basicdt;  
+  struct symtbr * symtype;
+  struct symtbr * symentry;
+  struct tokn * operands;
+  struct tokn * link;
+  union { char  tokenstring[16];  
+          int   which;
+          int   intnum;
+          double realnum; } tokenval;
+  } *TOKEN;
+*/
+/* copytok makes a new token that is a copy of origtok */
+TOKEN copytok(TOKEN origtok) {
+    TOKEN tok = talloc();
+    tok->tokentype = origtok->tokentype;
+    tok->basicdt = origtok->basicdt;
+    tok->symtype = origtok->symtype;
+    tok->symentry = origtok->symentry;
+    tok->tokenval = origtok->tokenval;
     return tok;
 }
 
@@ -287,13 +315,17 @@ TOKEN makefor(int sign, TOKEN tok, TOKEN asg, TOKEN tokb, TOKEN endexpr,
     label->operands = j; */
     TOKEN label = makelabel();
     TOKEN to = makeop(LEOP);
-    TOKEN i = findid(asg->operands);
+    TOKEN i = copytok(asg->operands);
+    findid(i);
     i->link = endexpr;
     to->operands = i;
     TOKEN inc = makeop(ASSIGNOP);
-    TOKEN _i = findid(asg->operands);
+    TOKEN _i = copytok(asg->operands);
+    findid(_i);
     /* TOKEN plus = maketoken(OPERATOR, PLUSOP); */
-    TOKEN plus = makeplus(findid(asg->operands), makeintc(1), tokb);
+    TOKEN __i = copytok(asg->operands);
+    findid(__i);
+    TOKEN plus = makeplus(__i, makeintc(1), tokb);
     _i->link = plus;
     inc->operands = _i;
     /* TOKEN _goto = maketoken(OPERATOR, GOTOOP);
@@ -307,35 +339,6 @@ TOKEN makefor(int sign, TOKEN tok, TOKEN asg, TOKEN tokb, TOKEN endexpr,
     return tok;
 }
 
-/* TOKEN makefor(TOKEN tok, TOKEN assignpart, TOKEN topart, TOKEN dopart) {
-    tok->tokentype = OPERATOR;
-    tok->whichval = PROGNOP;
-    TOKEN label = maketoken(OPERATOR, LABELOP);
-    TOKEN j = maketoken(NUMBERTOK, INTEGER);
-    j->intval = labelnumber++;
-    label->operands = j;
-    TOKEN to = maketoken(OPERATOR, LEOP);
-    TOKEN i = findid(assignpart->operands);
-    i->link = topart;
-    to->operands = i;
-    TOKEN inc = maketoken(OPERATOR, ASSIGNOP);
-    TOKEN _i = findid(assignpart->operands);
-    TOKEN plus = maketoken(OPERATOR, PLUSOP);
-    TOKEN __i = findid(assignpart->operands);
-    __i->link = maketoken(NUMBERTOK, INTEGER);
-    __i->link->intval = 1;
-    plus->operands = __i;
-    _i->link = plus;
-    inc->operands = _i;
-    TOKEN _goto = maketoken(OPERATOR, GOTOOP);
-    _goto->operands = j;
-    dopart->link = inc;
-    dopart->link->link = _goto;
-    label->link = makeif(maketoken(OPERATOR, IFOP), to, makeprogn(maketoken(OPEARTOR, PROGNOP), dopart), NULL);
-    assignpart->link = label;
-    tok->operands = assignpart;
-    return tok;
-} */
 
 /* makefuncall makes a FUNCALL operator and links it to the fn and args.
    tok is a (now) unused token that is recycled. */
@@ -389,6 +392,7 @@ TOKEN findid(TOKEN tok) { /* the ID token */
     if ( typ->kind == BASICTYPE ||
         typ->kind == POINTERSYM)
     tok->basicdt = typ->basicdt;
+    return tok;
 }
 
 
@@ -396,6 +400,7 @@ TOKEN findtype(TOKEN tok) { /* the type token */
     SYMBOL sym, typ;
     sym = searchins(tok->stringval);
     tok->symtype = sym;
+    return tok;
 }
 
 int main(void)          /*  */

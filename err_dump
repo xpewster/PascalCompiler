@@ -1,0 +1,7 @@
+make: Warning: File 'parse.y' has modification time 2 s in the future
+parse.y: warning: 1 shift/reduce conflict [-Wconflicts-sr]
+parse.y:400:17: warning: unused variable 'typ' [-Wunused-variable]
+    SYMBOL sym, typ;
+                ^
+1 warning generated.
+make: warning:  Clock skew detected.  Your build may be incomplete.
