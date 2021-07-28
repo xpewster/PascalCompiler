@@ -5,6 +5,9 @@
 # token.h is assumed to be a local file because on some machines
 # or yacc versions tokenb.h must be used instead (renamed token.h).
 
+# CFLAGS = -g
+# LDFLAGS = -g
+
 # To compile starter file lex1.c --> lex1
 # 
 lex1:   lexandr.o lex1.o scanner.o printtoken.o token.h lexan.h
@@ -143,7 +146,7 @@ y.tab.o: y.tab.c
 	cc -c y.tab.c
 
 pars1.tab.c: pars1.y token.h parse.h symtab.h lexan.h
-	yacc -b pars1 pars1.y
+	yacc --debug --verbose -b pars1 pars1.y
 
 pars1.tab.o: pars1.tab.c
 	cc -c pars1.tab.c
