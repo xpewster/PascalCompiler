@@ -1,7 +1,23 @@
 make: Warning: File 'parse.y' has modification time 2 s in the future
-parse.y: warning: 1 shift/reduce conflict [-Wconflicts-sr]
-parse.y:400:17: warning: unused variable 'typ' [-Wunused-variable]
-    SYMBOL sym, typ;
-                ^
-1 warning generated.
-make: warning:  Clock skew detected.  Your build may be incomplete.
+parse.y: warning: 4 shift/reduce conflicts [-Wconflicts-sr]
+parse.y:61:1: error: redefinition of 'TOKEN' as different kind of symbol
+TOKEN parseresult;
+^
+./token.h:37:6: note: previous definition is here
+  } *TOKEN;
+     ^
+parse.y:61:6: error: expected ';' after top level declarator
+TOKEN parseresult;
+     ^
+     ;
+parse.y:84:43: error: use of undeclared identifier 'parseresult'
+                                        { parseresult = makeprogram(yyvsp[-6], yyvsp[-4], yyvsp[-1]); }
+                                          ^
+parse.y:567:43: error: use of undeclared identifier 'parseresult'
+    if (DEBUG & DB_PARSERES) dbugprinttok(parseresult);
+                                          ^
+parse.y:568:12: error: use of undeclared identifier 'parseresult'
+    ppexpr(parseresult);           /* Pretty-print the result tree */
+           ^
+5 errors generated.
+make: *** [makefile:21: y.tab.o] Error 1
