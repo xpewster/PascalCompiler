@@ -203,3 +203,7 @@ TOKEN instarray(TOKEN bounds, TOKEN typetok);
 TOKEN talloc();
 
 int main(void);
+
+
+
+TOKEN makesubranget(TOKEN tok, TOKEN low, TOKEN high);

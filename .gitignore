@@ -4,3 +4,4 @@ lexanc
 *.out
 *.sample
 compilation_dump
+p5tests/
