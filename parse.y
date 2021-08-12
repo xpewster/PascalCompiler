@@ -216,10 +216,23 @@ arglist      :  expr COMMA arglist             { $$ = cons($1, $3); }
   factor     :  LPAREN expr RPAREN             { $$ = $2; }
              |  variable
              |  function
+             |  NIL                            { $$ = makeintc(0); }
              |  NUMBER
              |  STRING
              ;
   variable   : IDENTIFIER                      { $$ = findid($1); }
+             |  dotref
+             |  pointref
+             |  arrayref
+             ;
+  dotref     :  variable DOT IDENTIFIER      { $$ = reducedot($1, $2, $3); }
+             ;
+  pointref   :  variable POINT               { $$ = dopoint($1, $2); }
+             ;
+  arrayref   :  variable LBRACKET exprgroup RBRACKET { $$ = arrayref($1, $2, $3, $4); }
+             ;
+  exprgroup  :  expr COMMA exprgroup         { $$ = cons($1, $3); }
+             |  expr                         { $$ = cons($1, NULL); };
 %%
 
 /* You should add your own debugging flags below, and add debugging
@@ -243,6 +256,96 @@ arglist      :  expr COMMA arglist             { $$ = cons($1, $3); }
 
    /*  Note: you should add to the above values and insert debugging
        printouts in your routines similar to those that are shown here.     */
+
+/* mulint multiplies expression exp by integer n */
+TOKEN mulint(TOKEN exp, int n) {
+  TOKEN times = makeop(TIMESOP);
+  times->operands = exp;
+  times->operands->link = makeintc(n);
+  return times;
+}
+
+/* arrayref processes an array reference a[i]
+   subs is a list of subscript expressions.
+   tok and tokb are (now) unused tokens that are recycled. */
+TOKEN arrayref(TOKEN arr, TOKEN tok, TOKEN subs, TOKEN tokb) {
+  /* dbugprinttok(arr);
+  dbprsymbol(arr->symtype);
+  dbprsymbol(arr->symtype->datatype); */
+  TOKEN offset;
+  if (subs->tokentype == NUMBERTOK) {
+    offset = makeintc((subs->intval-arr->symtype->lowbound) * arr->symtype->datatype->size);
+  } else {
+    offset = makeplus(mulint(copytok(subs), arr->symtype->datatype->size),
+        makeintc(-1*arr->symtype->lowbound*arr->symtype->datatype->size), NULL);
+  }
+  //printf("offset:%i\n", offset);
+  tok = makearef(arr, offset, tokb);
+  tok->basicdt = arr->symtype->datatype->basicdt; 
+  tok->symtype = arr->symtype->datatype;
+  if (subs->link != NULL) {
+    return arrayref(tok, talloc(), subs->link, talloc());
+  }
+  return tok;
+}
+// assert( arr->symtype->kind == ARRAYSYM );
+
+/* dopoint handles a ^ operator.  john^ becomes (^ john) with type record
+   tok is a (now) unused token that is recycled. */
+TOKEN dopoint(TOKEN var, TOKEN tok) {
+  tok->tokentype = OPERATOR;
+  tok->whichval = POINTEROP;
+  tok->operands = var;
+  tok->symtype = var->symtype->datatype->datatype;
+  return tok;
+}
+//     assert( var->symtype->kind == POINTERSYM );
+//     assert( var->symtype->datatype->kind == TYPESYM );
+
+/* reducedot handles a record reference.
+   dot is a (now) unused token that is recycled. */
+TOKEN reducedot(TOKEN var, TOKEN dot, TOKEN field) {
+  SYMBOL i = var->symtype->datatype;
+  while (i != NULL) {
+    //printf("ASD: %s %s\n\n", i->namestring, field->stringval);
+    if (strcmp(i->namestring, field->stringval) == 0) {
+      //printf("A: %s %i\n", field->stringval, i->offset);
+      field->tokentype = NUMBERTOK;
+      field->basicdt = INTEGER;
+      field->intval = i->offset;
+      break;
+    }
+    i = i->link;
+  }
+  TOKEN tok = makearef(var, field, dot);
+  tok->basicdt = i->datatype->basicdt; 
+  tok->symtype = i->datatype;
+  //printf("A: %i\n", i->datatype->basicdt);
+  return tok; 
+}
+// assert( var->symtype->kind == RECORDSYM );
+
+/* makearef makes an array reference operation.
+   off is be an integer constant token
+   tok (if not NULL) is a (now) unused token that is recycled. */
+TOKEN makearef(TOKEN var, TOKEN off, TOKEN tok) {
+  if (var->tokentype == OPERATOR && var->whichval == AREFOP) {
+    if (var->operands->link->tokentype == NUMBERTOK && off->tokentype == NUMBERTOK) {
+      var->operands->link->intval += off->intval;
+    } else if (off->tokentype == NUMBERTOK){
+      var->operands->link->operands->link->intval += off->intval;
+    } else {
+      var->operands->link = makeplus(var->operands->link, off, tok);
+    }
+    return var;
+  } else {
+    tok->tokentype = OPERATOR;
+    tok->whichval = AREFOP;
+    tok->operands = var;
+    tok->operands->link = off;
+    return tok;
+  }
+}
 
 /* dogoto is the action for a goto statement.
    tok is a (now) unused token that is recycled. */
@@ -387,7 +490,7 @@ TOKEN instrec(TOKEN rectok, TOKEN argstok) {
   rec->datatype = NULL;
   SYMBOL prevsym = NULL;
   while (argstok != NULL) {
-    printf("%s\n", argstok->stringval);
+    //printf("%s\n", argstok->stringval);
     SYMBOL typesym = argstok->symtype;
     int align = alignsize(typesym);
     SYMBOL sym = makesym(argstok->stringval);
@@ -407,7 +510,7 @@ TOKEN instrec(TOKEN rectok, TOKEN argstok) {
     argstok = argstok->link;
   }
   rec->size = wordaddress(rec->size, 16);
-  printf("%s: size: %i  kind: %i", rec->namestring, rec->size, rec->kind);
+  //printf("%s: size: %i  datatype: %s", rec->namestring, rec->size, rec->datatype->namestring);
   rectok->symtype = rec;
   return rectok;
 }
@@ -461,7 +564,7 @@ TOKEN cons(TOKEN item, TOKEN list)           /* add item to front of list */
   /* makefloat forces the item tok to be floating, by floating a constant
    or by inserting a FLOATOP operator */
 TOKEN makefloat(TOKEN tok){
-  if (tok->symentry != NULL && tok->symentry->kind == CONSTSYM) {
+  if ((tok->symentry != NULL && tok->symentry->kind == CONSTSYM) || tok->tokentype == NUMBERTOK) {
     tok->tokentype = NUMBERTOK;
     tok->basicdt = REAL;
     tok->realval = (float)tok->intval;
@@ -737,6 +840,14 @@ TOKEN makerepeat(TOKEN tok, TOKEN statements, TOKEN tokb, TOKEN expr) {
 TOKEN makefuncall(TOKEN tok, TOKEN fn, TOKEN args) {
     tok->tokentype = OPERATOR;
     tok->whichval = FUNCALLOP;
+    if (strcmp(fn->stringval, "new") == 0) {
+      TOKEN asg = makeop(ASSIGNOP);
+      asg->operands = args;
+      tok->operands = fn;
+      tok->operands->link = makeintc(args->symtype->datatype->size);
+      asg->operands->link = tok;
+      return asg;
+    }
     if (strcmp(fn->stringval, "write") == 0) {
       if (args->basicdt == INTEGER) {
         strcpy(fn->stringval, "writei");

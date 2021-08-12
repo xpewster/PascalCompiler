@@ -1,5 +1,5 @@
-make: Warning: File 'parse.y' has modification time 0.053 s in the future
-parse.y: warning: 226 shift/reduce conflicts [-Wconflicts-sr]
+make: Warning: File 'parse.y' has modification time 0.28 s in the future
+parse.y: warning: 228 shift/reduce conflicts [-Wconflicts-sr]
 parse.y:62:1: error: redefinition of 'TOKEN' as different kind of symbol
 TOKEN parseresult;
 ^
@@ -13,10 +13,10 @@ TOKEN parseresult;
 parse.y:85:43: error: use of undeclared identifier 'parseresult'
                                         { parseresult = makeprogram(yyvsp[-6], yyvsp[-4], yyvsp[-1]); }
                                           ^
-parse.y:867:43: error: use of undeclared identifier 'parseresult'
+parse.y:978:43: error: use of undeclared identifier 'parseresult'
     if (DEBUG & DB_PARSERES) dbugprinttok(parseresult);
                                           ^
-parse.y:868:12: error: use of undeclared identifier 'parseresult'
+parse.y:979:12: error: use of undeclared identifier 'parseresult'
     ppexpr(parseresult);           /* Pretty-print the result tree */
            ^
 5 errors generated.
