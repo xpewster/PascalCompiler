@@ -194,6 +194,8 @@ arglist      :  expr COMMA arglist             { $$ = cons($1, $3); }
 %token ASSIGN EQ NE LT LE GE GT POINT DOT AND OR NOT DIV MOD IN */
   expr       :  expr PLUS term                 { $$ = binop($2, $1, $3); }
              |  expr MINUS term                 { $$ = binop($2, $1, $3); }
+             |  expr DIVIDE expr                   { $$ = binop($2, $1, $3); }
+             |  expr TIMES expr                   { $$ = binop($2, $1, $3); }
              |  expr EQ expr                   { $$ = binop($2, $1, $3); }
              |  expr NE expr                   { $$ = binop($2, $1, $3); }
              |  expr LT expr                   { $$ = binop($2, $1, $3); }

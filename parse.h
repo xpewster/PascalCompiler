@@ -207,3 +207,4 @@ int main(void);
 
 
 TOKEN makesubranget(TOKEN tok, TOKEN low, TOKEN high);
+TOKEN makenil(TOKEN tok);

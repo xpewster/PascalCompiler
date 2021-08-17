@@ -102,6 +102,8 @@
 #define ORQ    25    /* OR */
 #define NOTQ   26
 
+#define CVTSI2SD 27
+
 
 /* Round up n to be a multiple of m */
 int roundup(int n, int m);

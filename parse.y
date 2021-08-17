@@ -194,6 +194,8 @@ arglist      :  expr COMMA arglist             { $$ = cons($1, $3); }
 %token ASSIGN EQ NE LT LE GE GT POINT DOT AND OR NOT DIV MOD IN */
   expr       :  expr PLUS term                 { $$ = binop($2, $1, $3); }
              |  expr MINUS term                 { $$ = binop($2, $1, $3); }
+             |  expr DIVIDE expr                   { $$ = binop($2, $1, $3); }
+             |  expr TIMES expr                   { $$ = binop($2, $1, $3); }
              |  expr EQ expr                   { $$ = binop($2, $1, $3); }
              |  expr NE expr                   { $$ = binop($2, $1, $3); }
              |  expr LT expr                   { $$ = binop($2, $1, $3); }
@@ -217,7 +219,7 @@ arglist      :  expr COMMA arglist             { $$ = cons($1, $3); }
   factor     :  LPAREN expr RPAREN             { $$ = $2; }
              |  variable
              |  function
-             |  NIL                            { $$ = makeintc(0); }
+             |  NIL                            { $$ = makenil($1); }
              |  NUMBER
              |  STRING
              ;
@@ -257,6 +259,13 @@ arglist      :  expr COMMA arglist             { $$ = cons($1, $3); }
 
    /*  Note: you should add to the above values and insert debugging
        printouts in your routines similar to those that are shown here.     */
+
+TOKEN makenil(TOKEN tok) {
+  tok = makeintc(0);
+  tok->basicdt = POINTER;
+  tok->realval = 0;
+  return tok;
+}
 
 /* mulint multiplies expression exp by integer n */
 TOKEN mulint(TOKEN exp, int n) {
@@ -653,6 +662,7 @@ TOKEN binop(TOKEN op, TOKEN lhs, TOKEN rhs)        /* reduce binary operator */
 
 TOKEN unaryop(TOKEN op, TOKEN lhs) {
   op->operands = lhs;
+  op->basicdt = lhs->basicdt;
   return op;
 }
 
@@ -799,6 +809,7 @@ TOKEN makefor(int sign, TOKEN tok, TOKEN asg, TOKEN tokb, TOKEN endexpr,
     i->link = endexpr;
     to->operands = i;
     TOKEN inc = makeop(ASSIGNOP);
+    inc->basicdt = i->basicdt;
     TOKEN _i = copytok(asg->operands);
     findid(_i);
     /* TOKEN plus = maketoken(OPERATOR, PLUSOP); */
