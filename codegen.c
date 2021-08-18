@@ -61,12 +61,12 @@ void gencode(TOKEN pcode, int varsize, int maxlabel)
      asmexit(name->stringval);
   }
 
-/* Trivial version: always returns RBASE + 0 */
+/*  version: always returns RBASE + 0 */
 /* Get a register.   */
 /* Need a type parameter or two versions for INTEGER or REAL */
 int getreg(int kind)
   {
-    /*     ***** fix this *****   */
+    /*     *****  *****   */
     int c;
     if (kind == FLOAT) {
         c = FBASE;
@@ -98,7 +98,7 @@ int optablef[29] = {0, ADDSD, SUBSD, MULSD, DIVSD, 0, CMPSD, CMPSD, CMPSD, CMPSD
 int optableq[29] = {0, ADDQ, SUBQ, IMULQ, DIVSD, 0, CMPQ, CMPQ, CMPQ, CMPQ, CMPQ, CMPQ, MOVQ, MOVQ, ANDQ, ORQ, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 int movtable[3] = {MOVL, MOVSD, MOVQ};
 
-/* Trivial version */
+/*  version */
 /* Generate code for arithmetic expression, return a register number */
 int genarith(TOKEN code)
   {   int num, reg;
@@ -148,7 +148,7 @@ int genarith(TOKEN code)
          
 	   break;
        case OPERATOR:
-    /*     ***** fix this *****   */
+    /*     *****  *****   */
         if (code->whichval == POINTEROP) {
           return genarith(code->operands);
         }
@@ -395,7 +395,7 @@ void genc(TOKEN code)
         }
         break;
 	 case FUNCALLOP:
-    /*     ***** fix this *****   */
+    /*     *****  *****   */
     if (code->operands->link != NULL) {
       reg = genarith(code->operands->link);
       if (code->operands->link->basicdt == INTEGER) {
@@ -418,15 +418,15 @@ void genc(TOKEN code)
     // }
 	   break;
 	 case GOTOOP:
-    /*     ***** fix this *****   */
+    /*     *****  *****   */
     asmjump(JMP, code->operands->intval);
 	   break;
 	 case LABELOP:
-    /*     ***** fix this *****   */
+    /*     *****  *****   */
     asmlabel(code->operands->intval);
 	   break;
 	 case IFOP: {
-    /*     ***** fix this *****   */
+    /*     *****  *****   */
       genarith(code->operands);
       int labeltwo = nextlabel++;
       int labelthree = nextlabel++;
