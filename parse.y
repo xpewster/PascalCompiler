@@ -352,6 +352,7 @@ TOKEN makearef(TOKEN var, TOKEN off, TOKEN tok) {
     tok->tokentype = OPERATOR;
     tok->whichval = AREFOP;
     tok->operands = var;
+    tok->basicdt = var->basicdt;
     tok->operands->link = off;
     return tok;
   }

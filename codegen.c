@@ -96,6 +96,7 @@ int getreg(int kind)
 int optable[29] = {0, ADDL, SUBL, IMULL, DIVL, 0, CMPL, CMPL, CMPL, CMPL, CMPL, CMPL, MOVL, MOVL, ANDL, ORL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 int optablef[29] = {0, ADDSD, SUBSD, MULSD, DIVSD, 0, CMPSD, CMPSD, CMPSD, CMPSD, CMPSD, CMPSD, MOVSD, MOVSD, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 int optableq[29] = {0, ADDQ, SUBQ, IMULQ, DIVSD, 0, CMPQ, CMPQ, CMPQ, CMPQ, CMPQ, CMPQ, MOVQ, MOVQ, ANDQ, ORQ, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+int movtable[3] = {MOVL, MOVSD, MOVQ};
 
 /* Trivial version */
 /* Generate code for arithmetic expression, return a register number */
@@ -148,10 +149,65 @@ int genarith(TOKEN code)
 	   break;
        case OPERATOR:
     /*     ***** fix this *****   */
+        if (code->whichval == POINTEROP) {
+          return genarith(code->operands);
+        }
+        if (code->whichval == FUNCALLOP) {
+          if (code->basicdt == INTEGER) {
+            reg = EAX;
+          } else if (code->basicdt == REAL) {
+            reg = XMM0;
+          } else {
+            reg = RAX;
+          }
+          // int load = 0;
+          // if (regavail[reg] == 1) {
+          //   asmsttemp(reg);
+          //   load = 1;
+          // }
+          genc(code);
+          regavail[reg] = 1;
+          // int reg2;
+          // if (code->basicdt == INTEGER) {
+          //   reg2 = getreg(WORD);
+          // } else if (code->basicdt == REAL) {
+          //   reg2 = getreg(FLOAT);
+          // } else {
+          //   reg2 = getreg(ADDR);
+          // }
+          // if (load == 1)
+          //   asmldtemp(reg2);
+          return reg;
+        }
+
+        // if (code->whichval == AREFOP) {
+        //   return genarith(code->operands->link);
+        // }
+
+
         reg = genarith(code->operands);
         int reg2 = -1;
         if (code->operands->link != NULL) {
+          int load = 0;
+          if (code->operands->link->tokentype == OPERATOR && code->operands->link->whichval == FUNCALLOP) {
+            if (regavail[reg] == 1) {
+              asmsttemp(reg);
+              load = 1;
+            }
+          }
           reg2 = genarith(code->operands->link);
+          if (load == 1) {
+            int tempreg;
+            if (code->operands->link->basicdt == INTEGER) {
+              tempreg = getreg(WORD);
+            } else if (code->operands->link->basicdt == REAL) {
+              tempreg = getreg(FLOAT);
+            } else {
+              tempreg = getreg(ADDR);
+            }
+            asmldtemp(tempreg);
+            reg = tempreg;
+          }
         } else if (code->whichval == FLOATOP) {
           reg2 = reg;
           reg = getreg(FLOAT);
@@ -216,22 +272,101 @@ void genc(TOKEN code)
 	 case ASSIGNOP:                   /* Trivial version: handles I := e */
         lhs = code->operands;
         rhs = lhs->link;
-        reg = genarith(rhs);              /* generate rhs into a register */
-        sym = lhs->symentry;              /* assumes lhs is a simple var  */
-        offs = sym->offset - stkframesize; /* net offset of the var   */
-        switch (code->basicdt)            /* store value into lhs  */
-            { case INTEGER:
-                asmst(MOVL, reg, offs, lhs->stringval);
-                break;
-            case REAL:
-                asmst(MOVSD, reg, offs, lhs->stringval);
-                break;
-              default:
-                asmst(MOVQ, reg, offs, lhs->stringval);
-            };
+        if (lhs->tokentype == IDENTIFIERTOK) {
+          sym = lhs->symentry;              /* assumes lhs is a simple var  */
+          offs = sym->offset - stkframesize; /* net offset of the var   */
+          if (rhs->tokentype == OPERATOR && rhs->whichval == AREFOP) {
+            int reg2 = genarith(rhs->operands->link);
+            int tempreg;
+            asmop(CLTQ);
+            switch (code->basicdt) {           /* store value into lhs  */
+                { case INTEGER:
+                    tempreg = getreg(WORD);
+                    asmldrr(MOVL, -stkframesize+rhs->operands->symtype->offset, reg2, tempreg, rhs->operands->stringval);
+                    asmst(MOVL, tempreg, offs, lhs->stringval);
+                    break;
+                case REAL:
+                    tempreg = getreg(FLOAT);
+                    asmldrr(MOVSD, -stkframesize+rhs->operands->symtype->offset, reg2, tempreg, rhs->operands->stringval);
+                    asmst(MOVSD, tempreg, offs, lhs->stringval);
+                    break;
+                  default:
+                    tempreg = getreg(ADDR);
+                    asmldrr(MOVQ, -stkframesize+rhs->operands->symtype->offset, reg2, tempreg, rhs->operands->stringval);
+                    asmst(MOVQ, tempreg, offs, lhs->stringval);
+                };
+            }
+          } else {
+              reg = genarith(rhs);              /* generate rhs into a register */
+            switch (code->basicdt)            /* store value into lhs  */
+                { case INTEGER:
+                    asmst(MOVL, reg, offs, lhs->stringval);
+                    break;
+                case REAL:
+                    asmst(MOVSD, reg, offs, lhs->stringval);
+                    break;
+                  default:
+                    asmst(MOVQ, reg, offs, lhs->stringval);
+                };
+            }
+        } else if (lhs->tokentype == OPERATOR) {
+          if (lhs->whichval == AREFOP) {
+            reg = genarith(rhs);              /* generate rhs into a register */
+            if (lhs->operands->tokentype == OPERATOR && lhs->operands->whichval == POINTEROP) {
+              int reg2 = genarith(lhs->operands);
+              //int reg3 = genarith(lhs->operands->link);
+              switch (code->basicdt)            /* store value into lhs  */
+                { case INTEGER:
+                    asmstr(MOVL, reg, lhs->operands->link->intval, reg2, "^. ");
+                    break;
+                case REAL:
+                    asmstr(MOVSD, reg, lhs->operands->link->intval, reg2, "^. ");
+                    break;
+                  default:
+                    asmstr(MOVQ, reg, lhs->operands->link->intval, reg2, "^. ");
+                };
+            } else {
+              int reg2 = genarith(lhs->operands->link);
+              asmop(CLTQ);
+              
+              switch (code->basicdt)            /* store value into lhs  */
+                { case INTEGER:
+                    asmstrr(MOVL, reg, -stkframesize+lhs->operands->symtype->offset, reg2, lhs->operands->stringval);
+                    break;
+                case REAL:
+                    asmstrr(MOVSD, reg, -stkframesize+lhs->operands->symtype->offset, reg2, lhs->operands->stringval);
+                    break;
+                  default:
+                    asmstrr(MOVQ, reg, -stkframesize+lhs->operands->symtype->offset, reg2, lhs->operands->stringval);
+                };
+            }
+          } else {
+            printf("non aref operator: %i\n", lhs->whichval);
+          }
+        }
         break;
 	 case FUNCALLOP:
     /*     ***** fix this *****   */
+    if (code->operands->link != NULL) {
+      reg = genarith(code->operands->link);
+      if (code->operands->link->basicdt == INTEGER) {
+        if (reg != EDI)
+          asmrr(MOVL, reg, EDI);
+      } else if (code->operands->link->basicdt == REAL) {
+        if (reg != XMM0)
+          asmrr(MOVSD, reg, XMM0);
+      } else {
+        int labelnum = nextlabel++;
+        makeblit(code->operands->link->stringval, labelnum);
+        asmlitarg(labelnum, RDI);
+      }
+    }
+    if (searchlev(code->operands->stringval, 0) != NULL) {
+      asmcall(code->operands->stringval);
+    }
+    // if (strcmp(code->operands->stringval,"writelni") == 0 || strcmp(code->operands->stringval,"write") == 0 || strcmp(code->operands->stringval,"writelnf") == 0) {
+    //   asmcall(code->operands->stringval);
+    // }
 	   break;
 	 case GOTOOP:
     /*     ***** fix this *****   */
