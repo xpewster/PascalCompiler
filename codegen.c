@@ -225,7 +225,7 @@ int genarith(TOKEN code)
           else
             asmr(optablef[code->whichval], reg);
         } else {
-          if (code->operands->symtype->basicdt != INTEGER) {
+          if (code->operands->basicdt != INTEGER) {
             if (reg2 != -1)
               asmrr(optableq[code->whichval], reg2, reg);
             else
