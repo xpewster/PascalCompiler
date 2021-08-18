@@ -1,92 +1,92 @@
 Symbol table level 0
- 6222496        real  BASIC  basicdt   1          siz     8
- 6222592     integer  BASIC  basicdt   0          siz     4
- 6222688        char  BASIC  basicdt   2          siz     1
- 6222784     boolean  BASIC  basicdt   3          siz     4
- 6222880         exp  knd 5 0  typ 6222976  lvl  0  siz     0  off     0
+ 5522080        real  BASIC  basicdt   1          siz     8
+ 5522176     integer  BASIC  basicdt   0          siz     4
+ 5522272        char  BASIC  basicdt   2          siz     1
+ 5522368     boolean  BASIC  basicdt   3          siz     4
+ 5522464         exp  knd 5 0  typ 5522560  lvl  0  siz     0  off     0
 (FUNCTION real
           real)
- 6223168       trexp  knd 5 0  typ 6223264  lvl  0  siz     0  off     0
+ 5522752       trexp  knd 5 0  typ 5522848  lvl  0  siz     0  off     0
 (FUNCTION real
           real)
- 6223456         sin  knd 5 0  typ 6223552  lvl  0  siz     0  off     0
+ 5523040         sin  knd 5 0  typ 5523136  lvl  0  siz     0  off     0
 (FUNCTION real
           real)
- 6223744         cos  knd 5 0  typ 6223840  lvl  0  siz     0  off     0
+ 5523328         cos  knd 5 0  typ 5523424  lvl  0  siz     0  off     0
 (FUNCTION real
           real)
- 6224032       trsin  knd 5 0  typ 6224128  lvl  0  siz     0  off     0
+ 5523616       trsin  knd 5 0  typ 5523712  lvl  0  siz     0  off     0
 (FUNCTION real
           real)
- 6224320        sqrt  knd 5 0  typ 6224416  lvl  0  siz     0  off     0
+ 5523904        sqrt  knd 5 0  typ 5524000  lvl  0  siz     0  off     0
 (FUNCTION real
           real)
- 6224608       round  knd 5 0  typ 6224704  lvl  0  siz     0  off     0
+ 5524192       round  knd 5 0  typ 5524288  lvl  0  siz     0  off     0
 (FUNCTION real
           real)
- 6224896      iround  knd 5 0  typ 6224992  lvl  0  siz     0  off     0
+ 5524480      iround  knd 5 0  typ 5524576  lvl  0  siz     0  off     0
 (FUNCTION integer
           real)
- 6225184         ord  knd 5 0  typ 6225280  lvl  0  siz     0  off     0
-(FUNCTION integer
-          integer)
- 6225472         new  knd 5 0  typ 6225568  lvl  0  siz     0  off     0
+ 5524768         ord  knd 5 0  typ 5524864  lvl  0  siz     0  off     0
 (FUNCTION integer
           integer)
- 6225760       trnew  knd 5 0  typ 6225856  lvl  0  siz     0  off     0
+ 5525056         new  knd 5 0  typ 5525152  lvl  0  siz     0  off     0
 (FUNCTION integer
           integer)
- 6226048       write  knd 5 0  typ 6226144  lvl  0  siz     0  off     0
+ 5525344       trnew  knd 5 0  typ 5525440  lvl  0  siz     0  off     0
+(FUNCTION integer
+          integer)
+ 5525632       write  knd 5 0  typ 5525728  lvl  0  siz     0  off     0
 (FUNCTION NULL
           char)
- 6226336     writeln  knd 5 0  typ 6226432  lvl  0  siz     0  off     0
+ 5525920     writeln  knd 5 0  typ 5526016  lvl  0  siz     0  off     0
 (FUNCTION NULL
           char)
- 6226624      writef  knd 5 0  typ 6226720  lvl  0  siz     0  off     0
+ 5526208      writef  knd 5 0  typ 5526304  lvl  0  siz     0  off     0
 (FUNCTION NULL
           real)
- 6226912    writelnf  knd 5 0  typ 6227008  lvl  0  siz     0  off     0
+ 5526496    writelnf  knd 5 0  typ 5526592  lvl  0  siz     0  off     0
 (FUNCTION NULL
           real)
- 6227200      writei  knd 5 0  typ 6227296  lvl  0  siz     0  off     0
+ 5526784      writei  knd 5 0  typ 5526880  lvl  0  siz     0  off     0
 (FUNCTION NULL
           integer)
- 6227488    writelni  knd 5 0  typ 6227584  lvl  0  siz     0  off     0
+ 5527072    writelni  knd 5 0  typ 5527168  lvl  0  siz     0  off     0
 (FUNCTION NULL
           integer)
- 6227776        read  knd 5 0  typ 6227872  lvl  0  siz     0  off     0
+ 5527360        read  knd 5 0  typ 5527456  lvl  0  siz     0  off     0
 (FUNCTION NULL
           NULL)
- 6228064      readln  knd 5 0  typ 6228160  lvl  0  siz     0  off     0
+ 5527648      readln  knd 5 0  typ 5527744  lvl  0  siz     0  off     0
 (FUNCTION NULL
           NULL)
- 6228352         eof  knd 5 0  typ 6228448  lvl  0  siz     0  off     0
+ 5527936         eof  knd 5 0  typ 5528032  lvl  0  siz     0  off     0
 (FUNCTION boolean
           NULL)
 Symbol table level 1
- 6254688     complex  TYPE   typ 6254400  lvl  1  siz    16  off     0
+ 5554272     complex  TYPE   typ 5553984  lvl  1  siz    16  off     0
 (RECORD (re real)
         (im real))
- 6255488         red  CONST  typ INTEGER  val  0
- 6255648       white  CONST  typ INTEGER  val  1
- 6255808        blue  CONST  typ INTEGER  val  2
- 6256000       color  TYPE   typ 6255904  lvl  1  siz     4  off     0
+ 5555072         red  CONST  typ INTEGER  val  0
+ 5555232       white  CONST  typ INTEGER  val  1
+ 5555392        blue  CONST  typ INTEGER  val  2
+ 5555584       color  TYPE   typ 5555488  lvl  1  siz     4  off     0
   0 ..   2
- 6256416      person  TYPE   typ 6258240  lvl  1  siz    48  off     0
+ 5556000      person  TYPE   typ 5557824  lvl  1  siz    48  off     0
 (RECORD (age integer)
         (friend (^ person))
         (location (RECORD (re real)
                           (im real)))
         (favorite   0 ..   2)
         (salary real))
- 6256608          pp  TYPE   typ 6256512  lvl  1  siz     8  off     0
+ 5556192          pp  TYPE   typ 5556096  lvl  1  siz     8  off     0
 (^ person)
- 6259136        john  VAR    4 typ 6256512  lvl  1  siz     8  off     0
+ 5558720        john  VAR    4 typ 5556096  lvl  1  siz     8  off     0
 (^ person)
 yyparse result =        0
 (program graph1
 (progn output)
-(progn (:= (aref (^ john) 0) 19)))
+(progn (:= (aref (^ (aref (^ john) 8)) 24) 4.500000e+00)))
 # ---------------- Beginning of Generated Code --------------------
         .file   "foo"
         .text
@@ -103,9 +103,10 @@ graph1:
         subq	$32, %rsp 	  # make space for this stack frame
 	movq	%rbx, %r9        # save %rbx (callee-saved) in %r9
 # ------------------------- begin Your code -----------------------------
-	movl	$19,%eax         	#  19 -> %eax
-	movq	-32(%rbp),%rcx     	#  john -> %rcx
-	movl	%eax,0(%rcx)         	#  %eax -> ^. [0+%rcx]
+	movsd	.LC1(%rip),%xmm0   	#  4.500000 -> %xmm0
+	movq	-32(%rbp),%rax     	#  john -> %rax
+	movq	8(%rax),%rcx         	#  ^.[8+%rax] -> %rcx
+	movsd	%xmm0,24(%rcx)         	#  %xmm0 -> ^. [24+%rcx]
 # ----------------------- begin Epilogue code ---------------------------
 	movq	%r9, %rbx        # restore %rbx (callee-saved) from %r9
         leave
@@ -115,5 +116,9 @@ graph1:
         .size   graph1, .-graph1
 # ----------------- end Epilogue; Literal data follows ------------------
         .section        .rodata
+	.align  8
+.LC1:
+	.long	0   	#  4.500000
+	.long	1074921472
 
         .ident  "CS 375 Compiler - Fall 2020"

@@ -180,11 +180,12 @@ int genarith(TOKEN code)
           return reg;
         }
 
-        // if (code->whichval == AREFOP) {
-        //   return genarith(code->operands->link);
-        // }
-
-
+        if (code->whichval == AREFOP) {
+          int tempreg = genarith(code->operands);
+          reg = getreg(ADDR);
+          asmldr(MOVQ, code->operands->link->intval, tempreg, reg, "^.");
+          return reg;
+        }
         reg = genarith(code->operands);
         int reg2 = -1;
         if (code->operands->link != NULL) {
@@ -269,13 +270,60 @@ void genc(TOKEN code)
 		tok = tok->link;
 	      };
 	   break;
-	 case ASSIGNOP:                   /* Trivial version: handles I := e */
+	 case ASSIGNOP:                   
+      // lhs = code->operands;
+      // rhs = lhs->link;
+      // int is_lhs_aref = (lhs->tokentype == OPERATOR && lhs->whichval == AREFOP) ? 1 : 0;
+      // int is_rhs_aref = (rhs->tokentype == OPERATOR && rhs->whichval == AREFOP) ? 1 : 0;
+
+      // if (!is_lhs_aref & !is_rhs_aref == 1) {
+      //   reg = genarith(rhs);              /* generate rhs into a register */
+      //   if (lhs->tokentype == IDENTIFIERTOK) {
+      //     sym = lhs->symentry;              /* assumes lhs is a simple var  */
+      //     offs = sym->offset - stkframesize; /* net offset of the var   */
+          
+      //     switch (code->basicdt)            /* store value into lhs  */
+      //         { case INTEGER:
+      //             asmst(MOVL, reg, offs, lhs->stringval);
+      //             break;
+      //         case REAL:
+      //             asmst(MOVSD, reg, offs, lhs->stringval);
+      //             break;
+      //           default:
+      //             asmst(MOVQ, reg, offs, lhs->stringval);
+      //         };
+      //   }
+      // } else if (is_lhs_aref & !is_rhs_aref == 1) {
+
+      // }
+
         lhs = code->operands;
         rhs = lhs->link;
         if (lhs->tokentype == IDENTIFIERTOK) {
           sym = lhs->symentry;              /* assumes lhs is a simple var  */
           offs = sym->offset - stkframesize; /* net offset of the var   */
           if (rhs->tokentype == OPERATOR && rhs->whichval == AREFOP) {
+            if (rhs->operands->tokentype == OPERATOR && rhs->operands->whichval == POINTEROP) {
+              int reg2 = genarith(rhs->operands);
+              int tempreg;
+              //int reg3 = genarith(lhs->operands->link);
+              switch (code->basicdt)           
+                { case INTEGER:
+                    tempreg = getreg(WORD);
+                    asmldr(MOVL, rhs->operands->link->intval, reg2, tempreg, "^. ");
+                    asmst(MOVL, tempreg, offs, lhs->stringval);
+                    break;
+                case REAL:
+                    tempreg = getreg(FLOAT);
+                    asmldr(MOVSD, rhs->operands->link->intval, reg2, tempreg, "^. ");
+                    asmst(MOVSD, tempreg, offs, lhs->stringval);
+                    break;
+                  default:
+                    tempreg = getreg(ADDR);
+                    asmldr(MOVQ, rhs->operands->link->intval, reg2, tempreg, "^. ");
+                    asmst(MOVQ, tempreg, offs, lhs->stringval);
+                };
+            } else {
             int reg2 = genarith(rhs->operands->link);
             int tempreg;
             asmop(CLTQ);
@@ -295,6 +343,7 @@ void genc(TOKEN code)
                     asmldrr(MOVQ, -stkframesize+rhs->operands->symtype->offset, reg2, tempreg, rhs->operands->stringval);
                     asmst(MOVQ, tempreg, offs, lhs->stringval);
                 };
+              }
             }
           } else {
               reg = genarith(rhs);              /* generate rhs into a register */
